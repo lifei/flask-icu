@@ -15,6 +15,8 @@ import json
 
 from datetime import datetime
 from decimal import Decimal
+from functools import lru_cache
+
 from flask import _request_ctx_stack
 from icu import (Locale, MessageFormat, DateFormat, SimpleDateFormat,
                  Formattable, TimeZone, ICUtzinfo, NumberFormat, DecimalFormat)
@@ -169,6 +171,7 @@ class ICU(object):
             default = 'UTC'
         return (ICUtzinfo.getInstance(default).timezone)
 
+
 def load_messages(locale):
     """Loads ICU messages for a given locale from the source files. Translation
     files must be located in path: '<root>/translations/<lang>/'.
@@ -176,7 +179,13 @@ def load_messages(locale):
     ctx = _request_ctx_stack.top
     if ctx is None:
         return None
-    dirname = os.path.join(ctx.app.root_path, TRANSLATIONS_PATH)
+
+    return _load_messages(ctx.app.root_path, locale)
+    
+
+@lru_cache(100)
+def _load_messages(root_path, locale):
+    dirname = os.path.join(root_path, TRANSLATIONS_PATH)
     if not os.path.isdir(dirname):
         raise Exception('Unable to find the translations path.')
     locales_list = [name for name in os.listdir(dirname)
