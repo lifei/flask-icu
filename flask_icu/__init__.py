@@ -13,7 +13,6 @@ from __future__ import absolute_import
 import os
 import json
 
-from datetime import datetime
 from decimal import Decimal
 from functools import lru_cache
 
@@ -25,6 +24,7 @@ from werkzeug import ImmutableDict
 from flask_icu._compat import string_types
 
 TRANSLATIONS_PATH = 'translations'
+
 
 class ICU(object):
     """Central controller class that can be used to configure how
@@ -139,7 +139,6 @@ class ICU(object):
         self.timezone_selector_func = f
         return f
 
-
     def list_translations(self):
         """Returns a list of all the locales translations exist for.  The
         list returned will be filled with actual locale objects and not just
@@ -149,7 +148,7 @@ class ICU(object):
         if not os.path.isdir(dirname):
             return []
         return [name for name in os.listdir(dirname)
-            if os.path.isdir(os.path.join(dirname, name))]
+                if os.path.isdir(os.path.join(dirname, name))]
 
     @property
     def default_locale(self):
@@ -169,7 +168,7 @@ class ICU(object):
         default = self.app.config['ICU_DEFAULT_TIMEZONE']
         if default is None:
             default = 'UTC'
-        return (ICUtzinfo.getInstance(default).timezone)
+        return ICUtzinfo.getInstance(default).timezone
 
 
 def load_messages(locale):
@@ -397,7 +396,7 @@ def format_number(number):
     return NumberFormat.createInstance(get_locale()).format(number)
 
 
-# TODO: Enable a custom 'format' argment on this method like in flask-babel?
+# TODO: Enable a custom 'format' argument on this method like in flask-babel?
 def format_decimal(number):
     """Return the given decimal number formatted for the locale in request
 
@@ -412,7 +411,7 @@ def format_decimal(number):
     return formatter.format(number)
 
 
-# TODO: Enable a custom 'format' argment on this method like in flask-babel?
+# TODO: Enable a custom 'format' argument on this method like in flask-babel?
 def format_currency(number, currency=None):
     """Return the given number formatted for the locale in request
 
@@ -428,7 +427,7 @@ def format_currency(number, currency=None):
     return formatter.format(number).replace('\xa0', '')
 
 
-# TODO: Enable a custom 'format' argment on this method like in flask-babel?
+# TODO: Enable a custom 'format' argument on this method like in flask-babel?
 def format_percent(number):
     """Return formatted percent value for the locale in request
 
@@ -441,7 +440,8 @@ def format_percent(number):
     formatter = NumberFormat.createPercentInstance(locale)
     return formatter.format(number).replace('\xa0', '')
 
-# TODO: Enable a custom 'format' argment on this method like in flask-babel?
+
+# TODO: Enable a custom 'format' argument on this method like in flask-babel?
 def format_scientific(number):
     """Return value formatted in scientific notation for the locale in request
 
@@ -458,8 +458,6 @@ def format_scientific(number):
 def format(string, values=None):
     """Translates a string with the given current locale"""
 
-    ctx = _request_ctx_stack.top
-    locale = get_locale()
     icu_msg = get_message(string)
     msg = MessageFormat(icu_msg)
     if values is not None:
