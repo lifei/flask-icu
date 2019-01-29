@@ -170,6 +170,20 @@ class ICU(object):
             default = 'UTC'
         return ICUtzinfo.getInstance(default).timezone
 
+    def format(self, locale, key, values=None):
+        messages = _load_messages(self.app.root_path, locale)
+        msg = messages.get(key, key)
+        msg = MessageFormat(msg)
+        if values is None:
+            return msg.format('')
+
+        keys = []
+        vals = []
+        for (k, v) in values.items():
+            keys.append(k)
+            vals.append(Formattable(v))
+        return msg.format(keys, vals)
+
 
 def load_messages(locale):
     """Loads ICU messages for a given locale from the source files. Translation
