@@ -171,6 +171,8 @@ class ICU(object):
         return ICUtzinfo.getInstance(default).timezone
 
     def format(self, locale, key, values=None):
+        if isinstance(locale, Locale):
+            locale = locale.getName()
         messages = _load_messages(self.app.root_path, locale)
         msg = messages.get(key, key)
         msg = MessageFormat(msg)
